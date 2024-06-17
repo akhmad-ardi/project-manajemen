@@ -68,6 +68,8 @@
     }
   </style>
 
+  <script src="<?= base_url() ?>assets/js/bootstrap.min.js"></script>
+  <script src="<?= base_url() ?>assets/js/jquery-3.7.1.min.js"></script>
   <!-- Custom styles for this template -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
   <!-- Custom styles for this template -->
@@ -91,11 +93,6 @@
       </main>
     </div>
   </div>
-
-  <script src="<?= base_url() ?>assets/js/bootstrap.min.js"></script>
-</body>
-
-</html>
 
 </body>
 

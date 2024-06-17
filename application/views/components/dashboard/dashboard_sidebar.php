@@ -36,7 +36,7 @@ $list_menu_profile = array(
     <ul class="nav flex-column">
       <?php foreach ($list_menu_dashboard as $menu): ?>
         <li class="nav-item">
-          <a class="nav-link <?= $menu["segment"] == $this->uri->uri_string() ? "active" : "" ?>" aria-current="page"
+          <a class="nav-link <?= $menu["segment"] == $this->uri->uri_string ? "active" : "" ?>" aria-current="page"
             href="<?= $menu['href'] ?>">
             <i class="bi bi-<?= $menu['icon'] ?> fs-4 me-2"></i>
             <?= $menu['label'] ?>

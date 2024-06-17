@@ -9,9 +9,14 @@
   <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"
     rel="stylesheet" type="text/css" />
-
-  <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/template-style.css">
+  <!-- Bootstrap core JS-->
+  <script src="<?= base_url() ?>assets/js/bootstrap.min.js"></script>
+  <!-- Core theme JS-->
+  <script src="<?= base_url() ?>assets/js/template-script.js"></script>
+  <script src="<?= base_url() ?>assets/js/jquery-3.7.1.min.js"></script>
+  <script src="<?= base_url() ?>assets/js/auth.js"></script>
+  <link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/css/template-style.css">
   <title>
     <?= isset($page_info['title']) && $page_info['title'] ? $page_info['title'] . " | " : "" ?>
     [Kelola]
@@ -23,10 +28,7 @@
   <?php $this->load->view("components/auth/auth_navbar") ?>
   <?php $this->load->view($page_info['page']) ?>
 
-  <!-- Bootstrap core JS-->
-  <script src="<?php echo base_url() ?>assets/js/bootstrap.min.js"></script>
-  <!-- Core theme JS-->
-  <script src="<?php echo base_url() ?>assets/js/template-script.js"></script>
+  <script src="<?= base_url() ?>assets/js/auth.js"></script>
 </body>
 
 </html>

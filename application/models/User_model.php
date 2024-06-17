@@ -21,6 +21,20 @@ class User_model extends CI_Model
     }
   }
 
+  public function get_all_data(array $data)
+  {
+    try {
+      $get_all_user = $this->db->get_where($this->table, $data)->result();
+      if (!count($get_all_user))
+        throw new Exception('Nothing User', 404);
+
+      return ["is_success" => TRUE, "data" => $get_all_user];
+    } catch (Exception $e) {
+      log_message('error', $e->getMessage());
+      return ["is_success" => FALSE, "message" => $e->getMessage()];
+    }
+  }
+
   public function get_data(array $data)
   {
     try {
@@ -32,20 +46,6 @@ class User_model extends CI_Model
     } catch (Exception $e) {
       log_message("error", $e->getMessage());
 
-      return ["is_success" => FALSE, "message" => $e->getMessage()];
-    }
-  }
-
-  public function get_all_data()
-  {
-    try {
-      $get_all_user = $this->db->get($this->table)->result();
-      if (!count($get_all_user))
-        throw new Exception('Nothing User', 404);
-
-      return ["is_success" => TRUE, "data" => $get_all_user];
-    } catch (Exception $e) {
-      log_message('error', $e->getMessage());
       return ["is_success" => FALSE, "message" => $e->getMessage()];
     }
   }
