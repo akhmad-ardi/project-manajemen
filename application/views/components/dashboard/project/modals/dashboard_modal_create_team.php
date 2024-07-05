@@ -11,6 +11,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <?php if (isset($validation_errors['team'])): ?>
+          <div class="mb-3">
+            <div class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-circle"></i>
+              <?= $validation_errors['team'] ?>
+            </div>
+          </div>
+        <?php endif ?>
+
         <!-- team name -->
         <div class="mb-3">
           <label for="team_name" class="form-label">Team Name</label>
@@ -78,7 +87,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Save changes</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
       </div>
       <?= form_close() ?>
     </div>

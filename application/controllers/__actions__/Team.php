@@ -12,7 +12,7 @@ class Team extends CI_Controller
       redirect(base_url() . 'dashboard');
 
     if ($this->input->method() != "post")
-      redirect(base_url() . 'dashboard/projects');
+      redirect(base_url() . 'dashboard/projects?project=' . $_GET['project']);
   }
 
   public function add()
@@ -29,15 +29,14 @@ class Team extends CI_Controller
 
       $create_team = $this->team_model->create_data([
         "name" => $this->input->post('name'),
-        // "description" => $this->input->post('description'),
         "project_id" => $this->input->post('project_id')
       ]);
       if (!$create_team['is_success'])
-        throw new Exception($create_team['message']);
+        throw new Exception($create_team['message'], 401);
 
       $team = $this->team_model->get_data(["project_id" => $this->input->post('project_id')]);
       if (!$create_team['is_success'])
-        throw new Exception($team['message']);
+        throw new Exception($team['message'], 402);
 
       for ($i = 0; $i < count($this->input->post('list_team_members')); $i++) {
         $user = $this->user_model->get_data(["email" => $this->input->post('list_team_members')[$i]]);
@@ -50,11 +49,16 @@ class Team extends CI_Controller
       return redirect(base_url() . 'dashboard/projects?project=' . $_GET['project']);
     } catch (Exception $e) {
       log_message('error', $e->getMessage());
-      $this->session->set_flashdata('validation_errors', $this->form_validation->error_array());
-      $this->session->set_flashdata('set_value', [
-        "name" => set_value('name'),
-        "list_team_members" => set_value('list_team_members')
-      ]);
+      if (count($this->form_validation->error_array()) && $e->getCode() == 400) {
+        $this->session->set_flashdata('validation_errors', $this->form_validation->error_array());
+        $this->session->set_flashdata('set_value', [
+          "name" => set_value('name'),
+          "list_team_members" => set_value('list_team_members')
+        ]);
+      }
+
+      if ($e->getCode() == 401 || $e->getCode() == 402)
+        $this->session->set_flashdata('validation_errors', ["team" => $e->getMessage()]);
 
       return redirect(base_url() . 'dashboard/projects?project=' . $_GET['project']);
     }
