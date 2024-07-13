@@ -7,35 +7,35 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<form id="form_add_task">
-				<input type="hidden" name="project_id" value="<?= $project_id ?>">
+				<input type="hidden" name="project_id" value="<?= $project->id ?>">
 				<div class="modal-body">
 					<!-- alert -->
 					<div id="alert_message"></div>
 
 					<!-- task -->
 					<div class="mb-3">
-						<label for="name" class="form-label">Task</label>
-						<input type="text" class="form-control" name="name" id="name" placeholder="Task">
+						<label for="name-task-input" class="form-label">Task</label>
+						<input type="text" class="form-control" name="name" id="name-task-input" placeholder="Task">
 						<div id="name-feedback" class="invalid-feedback"></div>
 					</div>
 
 					<!-- start date -->
 					<div class="mb-3">
-						<label for="start_date" class="form-label">Start date</label>
-						<input type="date" class="form-control" name="start_date" id="start_date">
+						<label for="start_date-task-input" class="form-label">Start date</label>
+						<input type="date" class="form-control" name="start_date" id="start_date-task-input">
 						<div id="start_date-feedback" class="invalid-feedback"></div>
 					</div>
 
 					<!-- finish date -->
 					<div class="mb-3">
-						<label for="finish_date" class="form-label">Finish date</label>
-						<input type="date" class="form-control" name="finish_date" id="finish_date">
+						<label for="finish_date-task-input" class="form-label">Finish date</label>
+						<input type="date" class="form-control" name="finish_date" id="finish_date-task-input">
 						<div id="finish_date-feedback" class="invalid-feedback"></div>
 					</div>
 				</div>
 
 				<div class="modal-footer">
-					<button type="button" id="addTaskModal_close" class="btn btn-secondary"
+					<button type="button" id="addTaskModal_close" class="btn btn-outline-secondary"
 						data-bs-dismiss="modal">Close</button>
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
@@ -47,19 +47,19 @@
 <script>
 	$(document).ready(function () {
 		$('#addTaskModal_close').on('click', function () {
-			$(`#name`).removeClass('is-invalid')
-			$(`#start_date`).removeClass('is-invalid')
-			$(`#finish_date`).removeClass('is-invalid')
+			$(`#name-task-input`).removeClass('is-invalid')
+			$(`#start_date-task-input`).removeClass('is-invalid')
+			$(`#finish_date-task-input`).removeClass('is-invalid')
 		})
 
 		$('#form_add_task').on('submit', function (e) {
 			e.preventDefault()
-			$(`#name`).removeClass('is-invalid')
-			$(`#start_date`).removeClass('is-invalid')
-			$(`#finish_date`).removeClass('is-invalid')
+			$(`#name-task-input`).removeClass('is-invalid')
+			$(`#start_date-task-input`).removeClass('is-invalid')
+			$(`#finish_date-task-input`).removeClass('is-invalid')
 
 			$.ajax({
-				url: '<?= base_url() . '__actions__/task/add?project=' . $_GET['project'] ?>',
+				url: '<?= base_url() . '__actions__/task/add?project=' . $project->slug ?>',
 				type: 'POST',
 				data: $(this).serialize(),
 				dataType: 'json',
@@ -67,18 +67,17 @@
 					if (!response.is_success) {
 						for (const key in response.validation_errors) {
 							$(`#${key}-feedback`).text(response.validation_errors[key])
-							$(`#${key}`).addClass('is-invalid')
+							$(`#${key}-task-input`).addClass('is-invalid')
 						}
 					} else {
 						$('#addTaskModal').modal('hide');
 						$('#form_add_task')[0].reset();
 
 						// update table tasks
-						get_all_tasks('<?= base_url('__actions__/task/get_all?project_id=' . $project_id) ?>')
+						get_all_tasks('<?= base_url('__actions__/task/get_all?project_id=' . $project->id) ?>')
 					}
 				}
 			})
 		})
-
 	})
 </script>

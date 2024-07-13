@@ -1,5 +1,5 @@
-// format date
-function format_date(date) {
+// format date local
+function format_date_local(date) {
 	return new Date(date).toLocaleString("id-ID", {
 		year: "numeric",
 		month: "numeric",
@@ -8,7 +8,7 @@ function format_date(date) {
 }
 
 // get all tasks from endpoint tasks
-async function get_all_tasks(url) {
+async function get_all_tasks(url, team_detail) {
 	await $.ajax({
 		url: url,
 		type: "GET",
@@ -26,85 +26,53 @@ async function get_all_tasks(url) {
 				$.each(tasks, function (index, task) {
 					$("#body_table_task").append(`
 						<tr>
-							<td class="text-center">${index + 1}</td>
-							<td class="${
+							<td class="text-center text-nowrap">${index + 1}</td>
+							<td class="text-nowrap ${
 								task.status === "selesai" ? "text-decoration-line-through" : ""
 							}">${task.name}</td>
-							<td class="text-center ${
+							<td class="text-center text-nowrap ${
 								task.status === "selesai" ? "text-decoration-line-through" : ""
-							}">${format_date(task.start_date)}</td>
-							<td class="text-center ${
+							}">${format_date_local(task.start_date)}</td>
+							<td class="text-center text-nowrap ${
 								task.status === "selesai" ? "text-decoration-line-through" : ""
-							}">${format_date(task.finish_date)}</td>
-							<td class="text-center text-capitalize fw-bold">${task.status}</td>
-							<td class="d-flex justify-content-center gap-1">
-								${
+							}">${format_date_local(task.finish_date)}</td>
+							<td class="text-center text-nowrap text-capitalize fw-bold">${task.status}</td>
+							<td class="d-flex justify-content-center gap-1">			
+								<!-- Finish -->
+								<button type="button" class="btn ${
 									task.status === "selesai"
-										? `
-										<!-- Unfinish -->
-										<button type="button" class="btn btn-danger btnUnfinishTask" value="${task.id}">
-											<i class="bi bi-x-lg"></i>
-										</button>`
-										: `
-										<!-- Finish -->
-										<button type="button" class="btn btn-primary btnFinishTask" value="${task.id}">
-											<i class="bi bi-check-lg"></i>
-										</button>`
-								}	
-								
-								${
-									task.status === "proses"
-										? `
-										<!-- Unproses -->
-										<button class="btn btn-outline-info btnUnprocessTask" ${
-											task.status === "selesai" ? "disabled" : ""
-										} value="${task.id}">
-											<i class="bi bi-slash-circle-fill"></i>
-										</button>
-										`
-										: `
-										<!-- Proses -->
-										<button class="btn btn-info text-white btnProcessTask" ${
-											task.status === "selesai" ? "disabled" : ""
-										} value="${task.id}">
-											<i class="bi bi-arrow-repeat"></i>
-										</button>
-										`
-								}
-								
-								<!-- Edit -->
-								<button class="btn btn-outline-secondary">
-									<i class="bi bi-pencil-square"></i>
+										? "btn-danger btnUnfinishTask"
+										: "btn-primary btnFinishTask"
+								}" value="${task.id}">
+									${
+										task.status === "selesai"
+											? `<i class="bi bi-x-lg"></i>`
+											: `<i class="bi bi-check-lg"></i>`
+									}
 								</button>
-
+								
+								<!-- Proses -->
+								<button class="btn ${
+									task.status === "proses"
+										? "btn-outline-info btnUnprocessTask"
+										: "btn-info text-white btnProcessTask"
+								}" ${task.status === "selesai" ? "disabled" : ""} value="${task.id}">
+									<i class="bi bi-arrow-repeat"></i>
+								</button>
+										
+								<!-- Edit -->
+								<a href="/dashboard/task/${
+									task.project_id
+								}?id=${task.id}${team_detail ? `&team_id=${task.team_id}` : ""}" class="btn btn-outline-secondary ${task.status === "selesai" || task.status === "proses" ? "link-disabled" : ""}">
+									<i class="bi bi-pencil-square"></i>
+								</a>
+								
 								<!-- Delete -->
-								<button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteTaskModal${
+								<button type="button" class="btn btn-outline-danger btnDeleteTask" value="${
 									task.id
 								}">
 									<i class="bi bi-trash"></i>
 								</button>
-								<!-- Modal -->
-								<div class="modal fade" id="deleteTaskModal${
-									task.id
-								}" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
-									<div class="modal-dialog">
-										<div class="modal-content">
-											<div class="modal-header">
-												<h1 class="modal-title fs-5" id="deleteTaskModalLabel">Delete Task</h1>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-											</div>
-											<div class="modal-body">
-												Are you sure delete "${task.name}"?
-											</div>
-											<div class="modal-footer">
-												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-												<button type="button" class="btn btn-danger btnDeleteTask" value="${
-													task.id
-												}">Yes</button>
-											</div>
-										</div>
-									</div>
-								</div>
 							</td>
 						</tr>
 					`);

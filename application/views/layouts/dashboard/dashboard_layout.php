@@ -68,7 +68,7 @@
 		}
 	</style>
 
-	<script src="<?= base_url() ?>assets/js/bootstrap.min.js"></script>
+	<script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/jquery-3.7.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/utils.js"></script>
 	<!-- Custom styles for this template -->
@@ -87,7 +87,7 @@
 			<?php $this->load->view("components/dashboard/dashboard_sidebar") ?>
 
 			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-				<section id="#projects" class="container px-4 py-3">
+				<section id="#projects" class="container py-3">
 					<?php $this->load->view('components/dashboard/dashboard_breadcrumb', ['label_home' => $breadcrumb['label_home'], 'url_home' => $breadcrumb['url_home']]) ?>
 					<?php $this->load->view("pages/dashboard/" . $page_info["page"]) ?>
 				</section>
@@ -95,6 +95,12 @@
 		</div>
 	</div>
 
+	<?php if (isset($toast_success)): ?>
+		<?php $this->load->view('components/toast_component', ["toast_success" => $toast_success]) ?>
+	<?php endif; ?>
+	<?php if (isset($toast_error)): ?>
+		<?php $this->load->view('components/toast_component', ["toast_error" => $toast_error]) ?>
+	<?php endif; ?>
 </body>
 
 </html>

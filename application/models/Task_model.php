@@ -82,14 +82,10 @@ class Task_model extends CI_Model
 		}
 	}
 
-	public function delete_data($id)
+	public function delete_data(array $data = [])
 	{
 		try {
-			$task = $this->get_data(["id" => $id]);
-			if (!$task['is_success'])
-				throw new Exception($task['message'], 404);
-
-			$this->db->delete($this->table, ["id" => $task['data']->id]);
+			$this->db->delete($this->table, $data);
 			return array(
 				"is_success" => TRUE,
 				"message" => "Deleted task success"

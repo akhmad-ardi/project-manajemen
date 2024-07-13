@@ -45,6 +45,7 @@ class Auth extends CI_Controller
 
 			if ($e->getCode() == 404 || $e->getCode() == 401) {
 				$this->session->set_flashdata("validation_errors", ["signin_error" => $e->getMessage()]);
+				$this->session->set_flashdata("set_value", ['email' => set_value('email')]);
 			}
 
 			return redirect(base_url() . "auth/signin");

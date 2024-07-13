@@ -17,11 +17,8 @@ class Task extends CI_Controller
 
 		try {
 			$this->form_validation->set_rules('project_id', 'Project ID', ['required']);
-			$this->form_validation->set_rules('name', 'Name Task', ['required']);
-			$this->form_validation->set_rules('start_date', 'Start Date', ['required']);
-			$this->form_validation->set_rules('finish_date', 'Finish Date', ['required']);
 
-			if (!$this->form_validation->run())
+			if (!$this->validate_input())
 				throw new Exception('validation error', 400);
 
 			$create_task = $this->task_model->create_data([
@@ -74,6 +71,12 @@ class Task extends CI_Controller
 			$tasks = $this->task_model->get_all_data(["project_id" => $this->input->get('project_id')]);
 			if (!$tasks['is_success'])
 				throw new Exception($tasks['message'], 404);
+
+			$team = $this->team_model->get_data(["project_id" => $this->input->get('project_id')]);
+			if ($team['is_success'])
+				foreach ($tasks['data'] as $task) {
+					$task->team_id = $team['data']->id;
+				}
 
 			return $this->output->set_content_type('application/json')
 				->set_output(json_encode([
@@ -139,13 +142,58 @@ class Task extends CI_Controller
 		}
 	}
 
+	public function update()
+	{
+		$this->validate_method("post", "patch");
+
+		try {
+			$this->form_validation->set_rules('project_id', 'Project ID', ['required']);
+			$this->form_validation->set_rules('task_id', 'Task ID', ['required']);
+
+			if (!$this->validate_input())
+				throw new Exception('validation error');
+
+			$task = $this->task_model->get_data(["id" => $this->input->post("task_id")]);
+			if (!$task['is_success'])
+				throw new Exception($task['message'], 404);
+
+			$update_task = $this->task_model->update_data($task['data']->id, [
+				"name" => $this->input->post("name"),
+				"start_date" => $this->input->post("start_date"),
+				"finish_date" => $this->input->post("finish_date"),
+			]);
+			if (!$update_task['is_success'])
+				throw new Exception($update_task['message'], 500);
+
+			$this->session->set_flashdata("toast_success", "Task updated");
+			return redirect(base_url() . "dashboard/task/" . $this->input->post("project_id") . "?id=" . $this->input->post("task_id"));
+		} catch (Exception $e) {
+			log_message("error", $e->getMessage());
+			$validation_errors = $this->form_validation->error_array();
+			if (count($validation_errors)) {
+				$this->session->set_flashdata("validation_task_edit_errors", $validation_errors);
+				$this->session->set_flashdata("set_task_edit_errors", [
+					"name" => set_value("name"),
+					"start_date" => set_value("start_date"),
+					"finish_date" => set_value("finish_date"),
+				]);
+			}
+
+			if ($e->getCode() >= 400)
+				$this->session->set_flashdata("toast_error", "Something error");
+
+
+			return redirect(base_url() . "dashboard/task/" . $this->input->post("project_id") . "?id=" . $this->input->post("task_id"));
+		}
+	}
+
 	public function delete()
 	{
 		$this->validate_method('post');
 
 		try {
 			$id_task = json_decode($this->input->raw_input_stream, true)['id_task'];
-			$delete_task = $this->task_model->delete_data($id_task);
+			$delete_task = $this->task_model->delete_data(["id" => $id_task]);
 			if (!$delete_task['is_success'])
 				throw new Exception($delete_task['message'], 400);
 
@@ -163,9 +211,18 @@ class Task extends CI_Controller
 		}
 	}
 
-	public function validate_method($method)
+	public function validate_method($method = "", $_method = null)
 	{
-		if ($this->input->method() != $method)
-			return redirect(base_url() . 'dashboard/projects?project=' . $_GET['project']);
+		if ($this->input->method() != $method || (isset($_method) && $this->input->post("_method") != $_method))
+			return redirect(base_url() . 'dashboard/projects');
+	}
+
+	public function validate_input()
+	{
+		$this->form_validation->set_rules('name', 'Name Task', ['required']);
+		$this->form_validation->set_rules('start_date', 'Start Date', ['required']);
+		$this->form_validation->set_rules('finish_date', 'Finish Date', ['required']);
+
+		return $this->form_validation->run();
 	}
 }
